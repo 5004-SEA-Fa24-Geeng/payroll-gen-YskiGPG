@@ -28,8 +28,8 @@ public class HourlyEmployee implements IEmployee {
         this.name = name;
         this.id = id;
         this.payRate = payRate;
-        this.ytdEarnings = ytdEarnings;
-        this.ytdTaxesPaid = ytdTaxesPaid;
+        this.ytdEarnings = BigDecimal.valueOf(ytdEarnings).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        this.ytdTaxesPaid = BigDecimal.valueOf(ytdTaxesPaid).setScale(2, RoundingMode.HALF_UP).doubleValue();
         this.pretaxDeductions = pretaxDeductions;
     }
 
@@ -105,16 +105,19 @@ public class HourlyEmployee implements IEmployee {
         BigDecimal netPayBeforeTax = grossPay.subtract(pretaxDeductionsBD);
 
         // Total taxes are 22.65% of net pay before tax
-        BigDecimal taxes = netPayBeforeTax.multiply(BigDecimal.valueOf(0.2265))
-                .setScale(2, RoundingMode.HALF_UP);  // 保留两位小数
+        BigDecimal taxes = netPayBeforeTax.multiply(BigDecimal.valueOf(0.2265));
 
         // Final net pay after deducting taxes
-        BigDecimal finalNetPay = netPayBeforeTax.subtract(taxes)
-                .setScale(2, RoundingMode.HALF_UP);  // 保留两位小数
+        BigDecimal finalNetPay = netPayBeforeTax.subtract(taxes);
 
-        // Update ytd earnings and taxes paid
-        ytdEarnings += finalNetPay.doubleValue();
-        ytdTaxesPaid += taxes.doubleValue();
+        // 最后统一舍入到两位小数
+        grossPay = grossPay.setScale(2, RoundingMode.HALF_UP);
+        taxes = taxes.setScale(2, RoundingMode.HALF_UP);
+        finalNetPay = finalNetPay.setScale(2, RoundingMode.HALF_UP);
+
+        // Update ytd earnings and taxes paid with final rounding
+        ytdEarnings = BigDecimal.valueOf(ytdEarnings).add(finalNetPay).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        ytdTaxesPaid = BigDecimal.valueOf(ytdTaxesPaid).add(taxes).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
         // Return a PayStub for this pay period
         return new PayStub(name, finalNetPay.doubleValue(), taxes.doubleValue(), ytdEarnings, ytdTaxesPaid);

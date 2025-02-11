@@ -15,8 +15,8 @@ public class SalaryEmployee implements IEmployee{
         this.name = name;
         this.id = id;
         this.payRate = payRate;
-        this.ytdEarnings = ytdEarnings;
-        this.ytdTaxesPaid = ytdTaxesPaid;
+        this.ytdEarnings = BigDecimal.valueOf(ytdEarnings).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        this.ytdTaxesPaid = BigDecimal.valueOf(ytdTaxesPaid).setScale(2, RoundingMode.HALF_UP).doubleValue();
         this.pretaxDeductions = pretaxDeductions;
     }
 
@@ -80,19 +80,25 @@ public class SalaryEmployee implements IEmployee{
         BigDecimal payRateBD = BigDecimal.valueOf(payRate);
         BigDecimal pretaxDeductionsBD = BigDecimal.valueOf(pretaxDeductions);
 
+        // Annual salary divided into 24 bi-monthly payments (Gross Pay)
+        BigDecimal grossPay = payRateBD.divide(BigDecimal.valueOf(24), 10, RoundingMode.HALF_UP);  // 保留更多小数位以减少中间误差
 
-        // Annual salary divided into 24 bi-monthly payments
-        BigDecimal grossPay = payRateBD.divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
-
+        // Deduct pretax deductions
         BigDecimal netPayBeforeTax = grossPay.subtract(pretaxDeductionsBD);
-        BigDecimal taxes = netPayBeforeTax.multiply(BigDecimal.valueOf(0.2265))
-                .setScale(2, RoundingMode.HALF_UP);  // rounding up 2 decimals
-        BigDecimal finalNetPay = netPayBeforeTax.subtract(taxes)
-                .setScale(2, RoundingMode.HALF_UP);  // rounding up 2 decimals
 
-        // Update ytd earnings and taxes paid
-        ytdEarnings += finalNetPay.doubleValue();
-        ytdTaxesPaid += taxes.doubleValue();
+        // Total taxes are 22.65% of net pay before tax
+        BigDecimal taxes = netPayBeforeTax.multiply(BigDecimal.valueOf(0.2265));
+
+        // Final net pay after deducting taxes
+        BigDecimal finalNetPay = netPayBeforeTax.subtract(taxes);
+
+        // 最后统一舍入到两位小数
+        finalNetPay = finalNetPay.setScale(2, RoundingMode.HALF_UP);
+        taxes = taxes.setScale(2, RoundingMode.HALF_UP);
+
+        // Update ytd earnings and taxes paid with final rounding
+        ytdEarnings = BigDecimal.valueOf(ytdEarnings).add(finalNetPay).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        ytdTaxesPaid = BigDecimal.valueOf(ytdTaxesPaid).add(taxes).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
         // Return a PayStub for this pay period
         return new PayStub(name, finalNetPay.doubleValue(), taxes.doubleValue(), ytdEarnings, ytdTaxesPaid);

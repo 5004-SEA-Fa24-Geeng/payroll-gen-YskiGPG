@@ -21,12 +21,33 @@ public class PayStub implements IPayStub {
         return this.netPay;
     }
 
-    public double getTaxesPaid(){
+    public double getTaxesPaid() {
         return this.taxesPaid;
     }
 
+//    @Override
+//    public String toCSV() {
+//        return String.format("%s,%.2f,%.2f,%.2f,%.2f", name, netPay, taxesPaid, ytdEarnings, ytdTaxesPaid);
+//    }
+//}
+
     @Override
     public String toCSV() {
-        return String.format("%s,%.2f,%.2f,%.2f,%.2f", name, netPay, taxesPaid, ytdEarnings, ytdTaxesPaid);
+        return String.format("%s,%s,%s,%s,%s",
+                name,
+                formatDecimal(netPay),
+                formatDecimal(taxesPaid),
+                formatDecimal(ytdEarnings),
+                formatDecimal(ytdTaxesPaid));
+    }
+
+    // define a Format decimal method
+    private String formatDecimal(double value) {
+        if (value * 10 == Math.floor(value * 10)) {
+            return String.format("%.1f", value);  // 如果是整数，保留一位小数（如 1661.0）
+        } else {
+            return String.format("%.2f", value);  // 否则保留两位小数
+        }
     }
 }
+
