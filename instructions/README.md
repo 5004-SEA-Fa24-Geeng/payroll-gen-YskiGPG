@@ -6,7 +6,7 @@ When computers first came out, one of their first business applications was focu
 
 The languages used and design of payroll applications have changed over time, but the need for accurate payroll calculations has not.
 
-In this assignment, you will be building a simple payroll generator that reads in employee information and time cards, and then generates pay stubs for each employee.
+In this assignment, you will be **building a simple payroll generator that reads in employee information and time cards, and then generates pay stubs for each employee.**
 
 
 > [!NOTE]
@@ -69,11 +69,8 @@ We have provided a few files for you. Please read this list carefully, as it wil
 * **FileUtil.java**- This file contains methods that read and write lists from and to files. You can use this as is or you can modify it. Most students will leave this file unchanged. We provided this so you didn't have to know how to write to files in Java (at this time), but we will ask questions about it. 
 * **PayrollGenerator.java** - This is the main driver class for the program. You will need to implement the main method in this class. We have provided some guidance in the file on using FileUtil.java to read and write files. You do not have to use it this way. 
   * DO NOT CHANGE the Arguments inner class, and make sure to use it in your code to get the file names. This will allow us to change the program arguments to test your code.
-* **Builder.java** - Contains two methods you will want to implement. While you can add
-  more, you shouldn't need to. Remember to add error checking to the methods as you 
-  are reading in file data. 
-* **ITimeCard** - You can update this file. Contains two suggested methods for 
-  TimeCard object. 
+* **Builder.java** - Contains two methods you will want to implement. While you can add more, you shouldn't need to. Remember to add error checking to the methods as you are reading in file data. 
+* **ITimeCard** - You can update this file. Contains two suggested methods for TimeCard object. 
 
 #### Resources
 We have provided a number of .csv files in the resources folder. These files are used to test your program. They are also the 'default' locations for files in your program. We suggest looking at them so you can come up with your own test files, especially time_cards.csv. It is a pretty happy path in what is in there, and you may want to write another time_cards.csv that has negative values and other edge cases.
@@ -174,7 +171,7 @@ Here are a few tips to help you implement the program:
       BigDecimal bd2 = new BigDecimal(val);
       this.value = value.add(bd2).setScale(2, RoundingMode.HALF_UP);
    }
-
+   
    public double getValue() {
       return value.doubleValue();
    }
@@ -191,6 +188,7 @@ Here are a few tips to help you implement the program:
    and then expand the features. The **last** thing you should update is the `main` 
    method. However, everything else should be tested and working before that.
    
+
 Above all, make sure you test each method as you write it. This is the key to TDD, but also will make your final testing much, much easier.  Lastly, don't forget the design you learned in CS 5001! This isn't 100% new even if the syntax/language makes it feel all new. So it may help to ask yourself how you would do it in python.
 
 
