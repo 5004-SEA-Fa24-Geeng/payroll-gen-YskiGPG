@@ -5,8 +5,10 @@ package student;
  * Implements the ITimeCard interface.
  */
 public class TimeCard implements ITimeCard {
-    private final String employeeID;   // Employee's ID
-    private final double hoursWorked;  // Hours worked in the pay period
+    /** Employee's ID */
+    private final String employeeID;
+    /** Hours worked in the pay period */
+    private final double hoursWorked;
 
     /**
      * Constructor for TimeCard.

@@ -6,7 +6,11 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Builder {
+public final class Builder {
+    // Private constructor to prevent instantiation
+    private Builder() {
+        throw new UnsupportedOperationException("Utility class");
+    }
 
     /**
      * Reads the employees.csv file and returns a list of IEmployee objects.

@@ -71,7 +71,11 @@ public final class PayrollGenerator {
 
         //YOUR CODE HERE
         // 创建时间卡的映射，方便快速查找员工的工时
-        Map<String, Double> timeCardMap = timeCardList.stream().collect(Collectors.toMap(ITimeCard::getEmployeeID, ITimeCard::getHoursWorked));
+        Map<String, Double> timeCardMap = timeCardList.stream()
+                .collect(Collectors.toMap(
+                        ITimeCard::getEmployeeID,
+                        ITimeCard::getHoursWorked
+                ));
 
         // 遍历员工列表，生成工资单
         for (IEmployee employee : employees) {

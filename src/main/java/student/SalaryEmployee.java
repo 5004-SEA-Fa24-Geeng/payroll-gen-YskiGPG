@@ -3,14 +3,46 @@ package student;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class SalaryEmployee implements IEmployee{
-    private final String name;                // Employee's name
-    private final String id;                  // Employee's ID
-    private final double payRate;             // Hourly pay rate
-    private double ytdEarnings;               // YTD earnings
-    private double ytdTaxesPaid;              // YTD taxes paid
-    private final double pretaxDeductions;    // Pretax deductions for the employee
+/**
+ * SalaryEmployee class represents an employee who is paid a fixed salary.
+ *
+ * Implements the IEmployee interface and provides methods to:
+ *  - Retrieve employee information (name, ID, pay rate, etc.).
+ *  - Calculate payroll based on fixed salary divided into 24 periods.
+ *  - Update year-to-date earnings and taxes paid.
+ *  - Generate a PayStub for each payroll cycle.
+ *
+ * Taxes are calculated at a total rate of 22.65% on the net pay (after pretax deductions).
+ */
+public class SalaryEmployee implements IEmployee {
+    /** Employee's name */
+    private final String name;
 
+    /** Employee's ID */
+    private final String id;
+
+    /** Annual salary pay rate */
+    private final double payRate;
+
+    /** Year-to-date earnings */
+    private double ytdEarnings;
+
+    /** Year-to-date taxes paid */
+    private double ytdTaxesPaid;
+
+    /** Pretax deductions for the employee */
+    private final double pretaxDeductions;
+
+    /**
+     * Constructs a SalaryEmployee with provided details.
+     *
+     * @param name Employee's name
+     * @param id Employee's ID
+     * @param payRate Annual salary pay rate
+     * @param ytdEarnings Year-to-date earnings
+     * @param ytdTaxesPaid Year-to-date taxes paid
+     * @param pretaxDeductions Pretax deductions
+     */
     public SalaryEmployee(String name, String id, double payRate, double ytdEarnings, double ytdTaxesPaid, double pretaxDeductions) {
         this.name = name;
         this.id = id;
@@ -20,43 +52,43 @@ public class SalaryEmployee implements IEmployee{
         this.pretaxDeductions = pretaxDeductions;
     }
 
-    // Get the employee's name
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return name;
     }
 
-    // Get the employee's ID
+    /** {@inheritDoc} */
     @Override
     public String getID() {
         return id;
     }
 
-    // Get the employee's hourly pay rate
+    /** {@inheritDoc} */
     @Override
     public double getPayRate() {
         return payRate;
     }
 
-    // Get the type of employee, which is "SALARY" in this case
+    /** {@inheritDoc} */
     @Override
     public String getEmployeeType() {
         return "SALARY";
     }
 
-    // Get the year-to-date earnings
+    /** {@inheritDoc} */
     @Override
     public double getYTDEarnings() {
         return ytdEarnings;
     }
 
-    // Get the year-to-date taxes paid
+    /** {@inheritDoc} */
     @Override
     public double getYTDTaxesPaid() {
         return ytdTaxesPaid;
     }
 
-    // Get the pretax deductions
+    /** {@inheritDoc} */
     @Override
     public double getPretaxDeductions() {
         return pretaxDeductions;
@@ -72,7 +104,6 @@ public class SalaryEmployee implements IEmployee{
      */
     @Override
     public IPayStub runPayroll(double hoursWorked) {
-        // Skip payroll if negative hours are provided
         if (hoursWorked < 0) {
             return null;
         }
@@ -80,27 +111,17 @@ public class SalaryEmployee implements IEmployee{
         BigDecimal payRateBD = BigDecimal.valueOf(payRate);
         BigDecimal pretaxDeductionsBD = BigDecimal.valueOf(pretaxDeductions);
 
-        // Annual salary divided into 24 bi-monthly payments (Gross Pay)
-        BigDecimal grossPay = payRateBD.divide(BigDecimal.valueOf(24), 10, RoundingMode.HALF_UP);  // 保留更多小数位以减少中间误差
-
-        // Deduct pretax deductions
+        BigDecimal grossPay = payRateBD.divide(BigDecimal.valueOf(24), 10, RoundingMode.HALF_UP);
         BigDecimal netPayBeforeTax = grossPay.subtract(pretaxDeductionsBD);
-
-        // Total taxes are 22.65% of net pay before tax
         BigDecimal taxes = netPayBeforeTax.multiply(BigDecimal.valueOf(0.2265));
-
-        // Final net pay after deducting taxes
         BigDecimal finalNetPay = netPayBeforeTax.subtract(taxes);
 
-        // 最后统一舍入到两位小数
         finalNetPay = finalNetPay.setScale(2, RoundingMode.HALF_UP);
         taxes = taxes.setScale(2, RoundingMode.HALF_UP);
 
-        // Update ytd earnings and taxes paid with final rounding
         ytdEarnings = BigDecimal.valueOf(ytdEarnings).add(finalNetPay).setScale(2, RoundingMode.HALF_UP).doubleValue();
         ytdTaxesPaid = BigDecimal.valueOf(ytdTaxesPaid).add(taxes).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
-        // Return a PayStub for this pay period
         return new PayStub(name, finalNetPay.doubleValue(), taxes.doubleValue(), ytdEarnings, ytdTaxesPaid);
     }
 
@@ -112,6 +133,9 @@ public class SalaryEmployee implements IEmployee{
      */
     @Override
     public String toCSV() {
-        return String.format("SALARY,%s,%s,%.2f,%.2f,%.2f,%.2f", name, id, payRate, pretaxDeductions, ytdEarnings, ytdTaxesPaid);
+        return String.format(
+                "SALARY,%s,%s,%.2f,%.2f,%.2f,%.2f",
+                name, id, payRate, pretaxDeductions, ytdEarnings, ytdTaxesPaid
+        );
     }
 }
