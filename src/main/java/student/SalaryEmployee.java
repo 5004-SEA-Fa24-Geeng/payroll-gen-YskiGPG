@@ -15,22 +15,22 @@ import java.math.RoundingMode;
  * Taxes are calculated at a total rate of 22.65% on the net pay (after pretax deductions).
  */
 public class SalaryEmployee implements IEmployee {
-    /** Employee's name */
+    /** Employee's name. */
     private final String name;
 
-    /** Employee's ID */
+    /** Employee's ID. */
     private final String id;
 
-    /** Annual salary pay rate */
+    /** Annual salary pay rate. */
     private final double payRate;
 
-    /** Year-to-date earnings */
+    /** Year-to-date earnings. */
     private double ytdEarnings;
 
-    /** Year-to-date taxes paid */
+    /** Year-to-date taxes paid. */
     private double ytdTaxesPaid;
 
-    /** Pretax deductions for the employee */
+    /** Pretax deductions for the employee. */
     private final double pretaxDeductions;
 
     /**
@@ -43,7 +43,12 @@ public class SalaryEmployee implements IEmployee {
      * @param ytdTaxesPaid Year-to-date taxes paid
      * @param pretaxDeductions Pretax deductions
      */
-    public SalaryEmployee(String name, String id, double payRate, double ytdEarnings, double ytdTaxesPaid, double pretaxDeductions) {
+    public SalaryEmployee(String name,
+                          String id,
+                          double payRate,
+                          double ytdEarnings,
+                          double ytdTaxesPaid,
+                          double pretaxDeductions) {
         this.name = name;
         this.id = id;
         this.payRate = payRate;

@@ -8,19 +8,19 @@ package student;
  * This class is immutable.
  */
 public class PayStub implements IPayStub {
-    /** The name of the employee */
+    /** The name of the employee. */
     private final String name;
 
-    /** The net pay for the employee */
+    /** The net pay for the employee. */
     private final double netPay;
 
-    /** The taxes paid by the employee */
+    /** The taxes paid by the employee. */
     private final double taxesPaid;
 
-    /** The year-to-date earnings of the employee */
+    /** The year-to-date earnings of the employee. */
     private final double ytdEarnings;
 
-    /** The year-to-date taxes paid by the employee */
+    /** The year-to-date taxes paid by the employee. */
     private final double ytdTaxesPaid;
 
     /**
