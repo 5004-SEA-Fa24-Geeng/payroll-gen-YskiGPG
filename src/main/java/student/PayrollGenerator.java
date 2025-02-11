@@ -54,10 +54,10 @@ public final class PayrollGenerator {
         List<String> employeeLines = FileUtil.readFileToList(arguments.getEmployeeFile());
         List<String> timeCards = FileUtil.readFileToList(arguments.getTimeCards());
 
-        List<IEmployee> employees = employeeLines.stream().skip(1).map(Builder::buildEmployeeFromCSV)
+        List<IEmployee> employees = employeeLines.stream().map(Builder::buildEmployeeFromCSV)
                 .collect(Collectors.toList());
 
-        List<ITimeCard> timeCardList = timeCards.stream().skip(1).map(Builder::buildTimeCardFromCSV)
+        List<ITimeCard> timeCardList = timeCards.stream().map(Builder::buildTimeCardFromCSV)
                 .collect(Collectors.toList());
 
         List<IPayStub> payStubs = new LinkedList<>();
@@ -94,6 +94,7 @@ public final class PayrollGenerator {
                 }
             } else {
                 System.out.println("No time card found for employee: " + employee.getName());
+                continue;
             }
         }
 
