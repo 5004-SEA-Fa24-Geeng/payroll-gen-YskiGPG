@@ -1,6 +1,7 @@
 package student;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.LinkedList;
 
@@ -53,10 +54,10 @@ public final class PayrollGenerator {
         List<String> employeeLines = FileUtil.readFileToList(arguments.getEmployeeFile());
         List<String> timeCards = FileUtil.readFileToList(arguments.getTimeCards());
 
-        List<IEmployee> employees = employeeLines.stream().map(Builder::buildEmployeeFromCSV)
+        List<IEmployee> employees = employeeLines.stream().skip(1).map(Builder::buildEmployeeFromCSV)
                 .collect(Collectors.toList());
 
-        List<ITimeCard> timeCardList = timeCards.stream().map(Builder::buildTimeCardFromCSV)
+        List<ITimeCard> timeCardList = timeCards.stream().skip(1).map(Builder::buildTimeCardFromCSV)
                 .collect(Collectors.toList());
 
         List<IPayStub> payStubs = new LinkedList<>();
@@ -69,7 +70,32 @@ public final class PayrollGenerator {
         // as it is invalid, but if is 0, you still generate a paystub, but the amount is 0.
 
         //YOUR CODE HERE
-      
+        // 创建时间卡的映射，方便快速查找员工的工时
+        Map<String, Double> timeCardMap = timeCardList.stream().collect(Collectors.toMap(ITimeCard::getEmployeeID, ITimeCard::getHoursWorked));
+
+        // 遍历员工列表，生成工资单
+        for (IEmployee employee : employees) {
+            String employeeID = employee.getID();
+            Double hoursWorked = timeCardMap.get(employeeID);
+
+            if (hoursWorked != null) {
+                // 如果工时小于 0，跳过该员工
+                if (hoursWorked < 0) {
+                    System.out.println("Skipping negative worked hours: " + employee.getName());
+                    continue;
+                }
+
+                // 生成工资单
+                IPayStub payStub = employee.runPayroll(hoursWorked);
+
+                // 如果生成的工资单不为空，添加到 payStubs 列表
+                if (payStub != null) {
+                    payStubs.add(payStub);
+                }
+            } else {
+                System.out.println("No time card found for employee: " + employee.getName());
+            }
+        }
 
          // now save out employees to a new file
 
