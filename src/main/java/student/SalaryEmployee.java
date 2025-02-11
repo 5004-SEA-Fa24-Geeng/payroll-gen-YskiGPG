@@ -1,5 +1,8 @@
 package student;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class SalaryEmployee implements IEmployee{
     private final String name;                // Employee's name
     private final String id;                  // Employee's ID
@@ -74,19 +77,25 @@ public class SalaryEmployee implements IEmployee{
             return null;
         }
 
-        // Annual salary divided into 24 bi-monthly payments
-        double grossPay = payRate / 24;
+        BigDecimal payRateBD = BigDecimal.valueOf(payRate);
+        BigDecimal pretaxDeductionsBD = BigDecimal.valueOf(pretaxDeductions);
 
-        double netPayBeforeTax = grossPay - pretaxDeductions;
-        double taxes = netPayBeforeTax * 0.2265;
-        double finalNetPay = netPayBeforeTax - taxes;
+
+        // Annual salary divided into 24 bi-monthly payments
+        BigDecimal grossPay = payRateBD.divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
+
+        BigDecimal netPayBeforeTax = grossPay.subtract(pretaxDeductionsBD);
+        BigDecimal taxes = netPayBeforeTax.multiply(BigDecimal.valueOf(0.2265))
+                .setScale(2, RoundingMode.HALF_UP);  // rounding up 2 decimals
+        BigDecimal finalNetPay = netPayBeforeTax.subtract(taxes)
+                .setScale(2, RoundingMode.HALF_UP);  // rounding up 2 decimals
 
         // Update ytd earnings and taxes paid
-        ytdEarnings += finalNetPay;
-        ytdTaxesPaid += taxes;
+        ytdEarnings += finalNetPay.doubleValue();
+        ytdTaxesPaid += taxes.doubleValue();
 
         // Return a PayStub for this pay period
-        return new PayStub(name, finalNetPay, taxes, ytdEarnings, ytdTaxesPaid);
+        return new PayStub(name, finalNetPay.doubleValue(), taxes.doubleValue(), ytdEarnings, ytdTaxesPaid);
     }
 
     /**

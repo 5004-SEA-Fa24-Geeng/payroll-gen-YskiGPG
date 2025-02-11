@@ -1,5 +1,9 @@
 package student;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+
 /**
  * Description: HourlyEmployee class represents an employee who is paid based on an hourly rate.
  *
@@ -86,28 +90,34 @@ public class HourlyEmployee implements IEmployee {
             return null;
         }
 
+        BigDecimal payRateBD = BigDecimal.valueOf(payRate);
+        BigDecimal pretaxDeductionsBD = BigDecimal.valueOf(pretaxDeductions);
+
         // Regular hours are up to 40, overtime is any additional hours
-        double regularHours = Math.min(hoursWorked, 40);
-        double overtimeHours = Math.max(hoursWorked - 40, 0);
+        BigDecimal regularHours = BigDecimal.valueOf(Math.min(hoursWorked, 40));
+        BigDecimal overtimeHours = BigDecimal.valueOf(Math.max(hoursWorked - 40, 0));
 
         // Gross pay = regular hours * pay rate + overtime (1.5x pay rate)
-        double grossPay = (regularHours * payRate) + (overtimeHours * payRate * 1.5);
+        BigDecimal grossPay = (regularHours.multiply(payRateBD))
+                .add(overtimeHours.multiply(payRateBD).multiply(BigDecimal.valueOf(1.5)));
 
         // Deduct pretax deductions before applying taxes
-        double netPayBeforeTax = grossPay - pretaxDeductions;
+        BigDecimal netPayBeforeTax = grossPay.subtract(pretaxDeductionsBD);
 
         // Total taxes are 22.65% of net pay before tax
-        double taxes = netPayBeforeTax * 0.2265;
+        BigDecimal taxes = netPayBeforeTax.multiply(BigDecimal.valueOf(0.2265))
+                .setScale(2, RoundingMode.HALF_UP);  // 保留两位小数
 
         // Final net pay after deducting taxes
-        double finalNetPay = netPayBeforeTax - taxes;
+        BigDecimal finalNetPay = netPayBeforeTax.subtract(taxes)
+                .setScale(2, RoundingMode.HALF_UP);  // 保留两位小数
 
         // Update ytd earnings and taxes paid
-        ytdEarnings += finalNetPay;
-        ytdTaxesPaid += taxes;
+        ytdEarnings += finalNetPay.doubleValue();
+        ytdTaxesPaid += taxes.doubleValue();
 
         // Return a PayStub for this pay period
-        return new PayStub(name, finalNetPay, taxes, ytdEarnings, ytdTaxesPaid);
+        return new PayStub(name, finalNetPay.doubleValue(), taxes.doubleValue(), ytdEarnings, ytdTaxesPaid);
     }
 
     /**
